@@ -634,6 +634,7 @@
 "settings.preventScreenSaver.label" = "在播放时阻止屏幕保护程序启动";
 "settings.quitWhenNoOpenedWindow.label" = "没有打开的窗口时退出";
 "settings.receiveBetaUpdate.label" = "接收测试版本（Beta）更新";
+"settings.recordLastPlayedFile.label" = "记录最后播放的文件";
 "settings.recordPlaybackHistory.label" = "记录播放历史";
 "settings.recordRecentFiles.label" = "启用“最近打开”菜单";
 "settings.resumeLastPosition.label" = "自动恢复上次播放进度";
