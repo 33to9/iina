@@ -10,16 +10,14 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v7
 
-      - name: Select newest Xcode
-        run: |
-          ls -d /Applications/Xcode*.app
-          XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
-          echo "DEVELOPER_DIR=$XCODE/Contents/Developer" >> "$GITHUB_ENV"
-          DEVELOPER_DIR="$XCODE/Contents/Developer" xcodebuild -version
+      - name: Show Xcode version
+        run: xcodebuild -version
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_27.app/Contents/Developer
 
       - name: Install dependencies
         run: ./other/download_libs.sh
@@ -28,6 +26,8 @@ jobs:
 
       - name: Build
         run: xcodebuild -project iina.xcodeproj ONLY_ACTIVE_ARCH=NO -scheme iina -derivedDataPath . -configuration Nightly
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_27.app/Contents/Developer
 
       - name: Create DMG
         run: hdiutil create -volname "IINA (record-last-played-file)" -srcfolder Build/Products/Nightly/IINA.app -ov -format UDZO IINA.dmg
