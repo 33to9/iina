@@ -1,0 +1,40 @@
+name: Build (fork)
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['build/**']
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Select newest Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          echo "DEVELOPER_DIR=$XCODE/Contents/Developer" >> "$GITHUB_ENV"
+          DEVELOPER_DIR="$XCODE/Contents/Developer" xcodebuild -version
+
+      - name: Install dependencies
+        run: ./other/download_libs.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: xcodebuild -project iina.xcodeproj ONLY_ACTIVE_ARCH=NO -scheme iina -derivedDataPath . -configuration Nightly
+
+      - name: Create DMG
+        run: hdiutil create -volname "IINA (record-last-played-file)" -srcfolder Build/Products/Nightly/IINA.app -ov -format UDZO IINA.dmg
+
+      - name: Save artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: IINA
+          path: IINA.dmg
+          archive: false
